@@ -1,0 +1,19 @@
+name: Frage oder Wunsch / Question or idea
+description: Frage zur Einrichtung oder Bedienung, Verbesserungsvorschlag / Question about setup or use, suggestion
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Viele Antworten stehen im Handbuch (PDF beim jeweiligen Release) und in der App unter Info → Häufige Fragen.
+        Many answers are in the manual (PDF attached to each release) and in the app under Info → FAQ.
+  - type: textarea
+    id: question
+    attributes:
+      label: Frage oder Wunsch / Question or idea
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version (optional)

@@ -1,0 +1,10 @@
+# Leere Issues bleiben erlaubt: "Hilfe & Support" in der App öffnet ein vorausgefülltes Issue
+# Blank issues stay enabled: "Help & support" in the app opens a pre-filled issue
+blank_issues_enabled: true
+contact_links:
+  - name: Demo ausprobieren / Try the demo
+    url: https://demo.customprints.deixler.space
+    about: Mit Beispieldaten, täglich zurückgesetzt / With sample data, reset daily
+  - name: Sicherheitslücke melden / Report a vulnerability
+    url: https://github.com/jdeixi/3d-printstudio-install/security/advisories/new
+    about: Bitte nicht öffentlich als Issue / Please not as a public issue

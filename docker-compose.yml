@@ -1,0 +1,102 @@
+# 3D Print Studio – Installation mit Docker / installation with Docker
+# Anleitung / guide: https://github.com/jdeixi/3d-printstudio-install
+#
+# Diese Datei wird bei Updates aus der App heraus automatisch ersetzt. Eigene Anpassungen (z. B.
+# zusätzliche Ordner) deshalb in einer docker-compose.override.yml im selben Ordner vornehmen.
+# This file is replaced automatically by in-app updates. Put your own changes (e.g. extra folders)
+# into a docker-compose.override.yml in the same folder.
+name: 3d-printstudio
+
+services:
+  app:
+    image: ${APP_IMAGE:-ghcr.io/jdeixi/3d-printstudio}:${APP_VERSION:-latest}
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: "file:/app/data/dev.db"
+      # Schlüssel für verschlüsselte Zugangsdaten / key for encrypted credentials (.env)
+      DB_ENCRYPTION_KEY: ${DB_ENCRYPTION_KEY:?DB_ENCRYPTION_KEY fehlt in .env / missing in .env}
+      # Einrichtungscode für den ersten Benutzer / setup code for the first user (.env)
+      SETUP_CODE: ${SETUP_CODE:-}
+      # Sofort-Preis aus 3D-Modellen (optional, COMPOSE_PROFILES=slicer in .env) / instant price from
+      # 3D models (optional, COMPOSE_PROFILES=slicer in .env)
+      SLICER_TOKEN: ${SLICER_TOKEN:-}
+    networks:
+      - default
+      - slicer
+    volumes:
+      # Datenbank und hochgeladene Dateien / database and uploaded files
+      - app-data:/app/data
+      # Automatische Sicherungen (ZIP) / automatic backups (ZIP)
+      - ./backups:/app/backups
+      # Austausch mit dem Update-Container / exchange with the update container
+      - update-ctl:/app/update
+
+  # Update-Container: führt Updates aus, die in der App (Grundeinstellungen → Update) angestoßen
+  # werden, und startet die App neu, wenn sie hängt. Nur er bekommt Zugriff auf Docker.
+  # Update container: runs updates started in the app (Basic settings → Update) and restarts the
+  # app if it hangs. Only this container gets access to Docker.
+  updater:
+    image: docker:27.5.1-cli
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "${PROJECT_DIR:?PROJECT_DIR fehlt in .env / missing in .env}/updater/updater.sh"]
+    environment:
+      PROJECT_DIR: ${PROJECT_DIR}
+      IMAGE: ${APP_IMAGE:-ghcr.io/jdeixi/3d-printstudio}
+      COMPOSE_PROJECT_NAME: 3d-printstudio
+      HEALTH_URL: http://app:3000/api/health
+      # Bei Updates aus dem neuen Image übernehmen / take over from the new image on updates
+      COMPOSE_IN_IMAGE: /app/install/docker-compose.yml
+      UPDATER_IN_IMAGE: /app/install/updater.sh
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${PROJECT_DIR}:${PROJECT_DIR}
+      - update-ctl:/ctl
+
+  # Slicer-Dienst (OrcaSlicer) für den Sofort-Preis aus 3D-Modellen – optional, startet nur mit
+  # COMPOSE_PROFILES=slicer und SLICER_TOKEN in .env. Ohne Internet (nur internes Netz zur App),
+  # ohne Root-Rechte, schreibgeschützt; Speicher und CPU begrenzt.
+  # Slicer service (OrcaSlicer) for the instant price from 3D models – optional, only starts with
+  # COMPOSE_PROFILES=slicer and SLICER_TOKEN in .env. No internet (internal network to the app only),
+  # no root, read-only; memory and CPU limited.
+  slicer:
+    # Dasselbe Image wie die App (gleiche Version), nur mit dem Slicer-Dienst als Startbefehl
+    # Same image as the app (same version), started with the slicer service instead
+    image: ${APP_IMAGE:-ghcr.io/jdeixi/3d-printstudio}:${APP_VERSION:-latest}
+    entrypoint: ["python3", "/srv/server.py"]
+    user: "10001:10001"
+    working_dir: /tmp
+    profiles: ["slicer"]
+    restart: unless-stopped
+    environment:
+      SLICER_TOKEN: ${SLICER_TOKEN:-}
+      PORT: "8000"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4).status == 200 else 1)"]
+      interval: 60s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    networks:
+      - slicer
+    read_only: true
+    tmpfs:
+      - /tmp:size=2g
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 3g
+    pids_limit: 512
+    # Rechenzeit-Gewichtung statt fester CPU-Grenze ("cpus" geht auf Synology-Kerneln nicht): bei Last
+    # bekommt die App Vorrang / CPU weight instead of a hard limit ("cpus" fails on Synology kernels)
+    cpu_shares: 512
+
+networks:
+  default:
+  # Nur App <-> Slicer, ohne Verbindung nach außen / app <-> slicer only, no outside connection
+  slicer:
+    internal: true
+
+volumes:
+  app-data:
+  update-ctl:

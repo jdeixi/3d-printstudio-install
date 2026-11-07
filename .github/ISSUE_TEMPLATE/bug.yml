@@ -1,0 +1,43 @@
+name: Fehler melden / Report a bug
+description: Etwas funktioniert nicht wie erwartet / Something does not work as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Bitte keine Zugangsdaten, Kundendaten oder Rechnungen anhängen – Issues sind öffentlich.
+        Tipp: In der App unter Info → „Hilfe & Support“ wird das Issue samt Diagnose vorausgefüllt.
+
+        Please do not attach credentials, customer data or invoices – issues are public.
+        Tip: in the app under Info → “Help & support” the issue is pre-filled including diagnostics.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Info → Systeminfo, z. B. / e.g. 1.1.1
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Betrieb / Mode of operation
+      options:
+        - Docker (Server / NAS)
+        - Desktop-App macOS
+        - Desktop-App Windows
+        - Desktop-App Linux
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: Was ist passiert? / What happened?
+      description: Was hast du gemacht, was ist passiert, was hast du erwartet? / What did you do, what happened, what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnose / Diagnostics (optional)
+      description: Info → Hilfe & Support → „Diagnose ansehen“ / Info → Help & support → “View diagnostics”
+      render: text
