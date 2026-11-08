@@ -22,6 +22,9 @@ services:
       # Sofort-Preis aus 3D-Modellen (optional, COMPOSE_PROFILES=slicer in .env) / instant price from
       # 3D models (optional, COMPOSE_PROFILES=slicer in .env)
       SLICER_TOKEN: ${SLICER_TOKEN:-}
+      # Eingangsordner der Modellbibliothek (Ordner "modell-eingang" neben dieser Datei) / inbox folder of
+      # the model library (folder "modell-eingang" next to this file)
+      LIBRARY_INBOX_DIR: /app/modell-eingang
     networks:
       - default
       - slicer
@@ -30,6 +33,8 @@ services:
       - app-data:/app/data
       # Automatische Sicherungen (ZIP) / automatic backups (ZIP)
       - ./backups:/app/backups
+      # Neue 3D-Modelle für die Modellbibliothek hier ablegen / drop new 3D models for the model library here
+      - ./modell-eingang:/app/modell-eingang
       # Austausch mit dem Update-Container / exchange with the update container
       - update-ctl:/app/update
 
