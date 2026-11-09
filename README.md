@@ -88,6 +88,30 @@ Caddy, Traefik, Nginx Proxy Manager oder den Reverse Proxy der Synology). Der Mi
 liegt unter `/admin`; er sollte zusätzlich geschützt werden (z. B. Zwei-Faktor-Anmeldung vor dem
 Proxy). Details im Handbuch, Kapitel 2.
 
+#### Eigenes Proxy-Netzwerk und eigener Datenordner
+
+Beides geht über eine `docker-compose.override.yml`, die Updates nicht anfassen und der Update-Container
+berücksichtigt. Sie muss **vor** der Installation im Ordner liegen. `proxy` ist der Name des vorhandenen Netzwerks:
+
+```yaml
+services:
+  app:
+    ports: !reset []          # kein Port auf dem Host (braucht Docker Compose 2.24 oder neuer)
+    volumes:
+      - ./data:/app/data      # Datenbank und Uploads im Ordner statt im Docker-Volume
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+```
+
+Der Installationsordner kann dabei auf einer eigenen Platte liegen, z. B. `/storage/3dprintstudio`; `install.sh` trägt
+ihn selbst als `PROJECT_DIR` ein. Im Reverse Proxy (z. B. Nginx Proxy Manager) als Ziel `http`,
+`3d-printstudio-app-1`, Port `3000` eintragen. Die App läuft im Container als root, die Dateien im Ordner gehören also
+meist root. `data/` nur bei gestoppter App kopieren.
+
 Der Reverse Proxy muss die echte Adresse der Besucher weitergeben (Header `X-Forwarded-For`) – davon
 hängen die Schutzgrenzen gegen Passwort-Raten und Missbrauch ab. Läuft er selbst als Docker-Container,
 sehen manche Systeme (z. B. Synology Container Manager) statt der echten Adresse nur die interne
@@ -194,6 +218,30 @@ access and can only be reached by the app.
 For the customer portal and online shop, put the app behind a reverse proxy with HTTPS (e.g. Caddy,
 Traefik, Nginx Proxy Manager or the Synology reverse proxy). The staff area is under `/admin`; protect
 it additionally (e.g. two-factor sign-in in front of the proxy). Details in the manual, chapter 2.
+
+#### Own proxy network and own data folder
+
+Both work with a `docker-compose.override.yml`, which updates leave alone and the update container respects. It has to
+be in the folder **before** the installation. `proxy` is the name of your existing network:
+
+```yaml
+services:
+  app:
+    ports: !reset []          # no port on the host (needs Docker Compose 2.24 or newer)
+    volumes:
+      - ./data:/app/data      # database and uploads in the folder instead of the Docker volume
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+```
+
+The installation folder can be on a disk of its own, e.g. `/storage/3dprintstudio`; `install.sh` sets it as `PROJECT_DIR`
+by itself. In the reverse proxy (e.g. Nginx Proxy Manager) enter the target `http`, `3d-printstudio-app-1`, port `3000`.
+The app runs as root inside the container, so the files in the folder usually belong to root. Only copy `data/` while
+the app is stopped.
 
 The reverse proxy must pass on the real address of visitors (header `X-Forwarded-For`) – the limits
 that protect against password guessing and abuse depend on it. If the proxy itself runs as a Docker
