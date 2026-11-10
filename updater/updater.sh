@@ -31,24 +31,44 @@ APP_CONTAINER="${APP_CONTAINER:-$PROJECT-$SERVICE-1}"
 COMPOSE_IN_IMAGE="${COMPOSE_IN_IMAGE:-}"
 UPDATER_IN_IMAGE="${UPDATER_IN_IMAGE:-/app/install/updater.sh}"
 OVERRIDE_FILE="$PROJECT_DIR/docker-compose.override.yml"
-UPDATER_VERSION=2
+UPDATER_VERSION=3
+# Im gemeinsamen Volume ($CTL) kann auch die App schreiben. Wer die App übernähme, dürfte darüber nicht an
+# Docker kommen (und damit an den ganzen Server). Deshalb:
+# - Arbeitsdateien eines Updates (neue Compose-Datei, neues Skript, Kopie für den Rückweg) und das laufende
+#   Protokoll liegen in $WORK, einem Ordner nur in diesem Container - dort lässt sich nichts unterschieben.
+# - Ins gemeinsame Volume schreibt der Updater nur über put(): Der Inhalt entsteht in $WORK und wird dann
+#   kopiert. Das Kopieren legt die Zieldatei neu an und schreibt nie durch eine Verknüpfung hindurch - sonst
+#   ließe sich z. B. das Protokoll in die .env oder die Compose-Datei umlenken.
+WORK="${UPDATER_WORK_DIR:-/tmp/updater-work}"
+LOG="$WORK/update.log"
+OUTAGES="$WORK/outages.log"
 
 ID=""
 FROM=""
 TO=""
 
+put() { # name - Inhalt von der Standardeingabe ins gemeinsame Volume (siehe oben)
+  cat > "$WORK/put.tmp" || return 1
+  cp -fT "$WORK/put.tmp" "$CTL/$1.tmp" 2>/dev/null && mv -fT "$CTL/$1.tmp" "$CTL/$1" 2>/dev/null
+}
+
+publish_log() {
+  tail -n 500 "$LOG" | put update.log
+}
+
 log() {
-  echo "$(date '+%Y-%m-%d %H:%M:%S') $*" | tee -a "$CTL/update.log"
+  echo "$(date '+%Y-%m-%d %H:%M:%S') $*" | tee -a "$LOG"
+  publish_log
 }
 
 status() { # state message
   msg=$(printf '%s' "$2" | tr '"\\' "''")
   printf '{"id":"%s","state":"%s","message":"%s","from":"%s","to":"%s","at":%s}\n' \
-    "$ID" "$1" "$msg" "$FROM" "$TO" "$(date +%s)" > "$CTL/status.json.tmp" && mv "$CTL/status.json.tmp" "$CTL/status.json"
+    "$ID" "$1" "$msg" "$FROM" "$TO" "$(date +%s)" | put status.json
 }
 
 heartbeat() {
-  printf '{"version":%s,"at":%s}\n' "$UPDATER_VERSION" "$(date +%s)" > "$CTL/updater.json.tmp" && mv "$CTL/updater.json.tmp" "$CTL/updater.json"
+  printf '{"version":%s,"at":%s}\n' "$UPDATER_VERSION" "$(date +%s)" | put updater.json
 }
 
 compose() {
@@ -84,15 +104,15 @@ healthy() { # version - bis zu 3 Minuten warten (Migrationen beim Start)
   return 1
 }
 
-# docker-compose.yml und updater.sh aus dem neuen Image holen (nach $CTL/*.new). Fehlen sie im Image,
+# docker-compose.yml und updater.sh aus dem neuen Image holen (nach $WORK/*.new). Fehlen sie im Image,
 # bleiben die bisherigen Dateien (nur Hinweis im Protokoll).
 fetch_files() {
-  rm -f "$CTL/compose.new" "$CTL/updater.new"
-  cid=$(docker create "$IMAGE:$1" 2>>"$CTL/update.log") || return 1
+  rm -f "$WORK/compose.new" "$WORK/updater.new" "$WORK/compose.prev"
+  cid=$(docker create "$IMAGE:$1" 2>>"$LOG") || return 1
   if [ -n "$COMPOSE_IN_IMAGE" ]; then
-    docker cp "$cid:$COMPOSE_IN_IMAGE" "$CTL/compose.new" >/dev/null 2>&1 || log "Hinweis: keine docker-compose.yml im Image"
+    docker cp "$cid:$COMPOSE_IN_IMAGE" "$WORK/compose.new" >/dev/null 2>&1 || log "Hinweis: keine docker-compose.yml im Image"
   fi
-  docker cp "$cid:$UPDATER_IN_IMAGE" "$CTL/updater.new" >/dev/null 2>&1 || log "Hinweis: kein updater.sh im Image"
+  docker cp "$cid:$UPDATER_IN_IMAGE" "$WORK/updater.new" >/dev/null 2>&1 || log "Hinweis: kein updater.sh im Image"
   docker rm "$cid" >/dev/null 2>&1
   return 0
 }
@@ -110,7 +130,7 @@ run_update() {
 
   log "Update $FROM -> $TO"
   status pulling "Lade Version $TO ..."
-  if ! docker pull "$IMAGE:$TO" >>"$CTL/update.log" 2>&1; then
+  if ! docker pull "$IMAGE:$TO" >>"$LOG" 2>&1; then
     log "Image $IMAGE:$TO nicht ladbar"
     status failed "Version $TO konnte nicht geladen werden (Internetverbindung? Siehe update.log)."
     return
@@ -120,37 +140,39 @@ run_update() {
     return
   fi
 
-  cp "$COMPOSE_FILE" "$CTL/compose.prev"
-  if [ -s "$CTL/compose.new" ] && ! cmp -s "$CTL/compose.new" "$COMPOSE_FILE"; then
+  cp "$COMPOSE_FILE" "$WORK/compose.prev"
+  if [ -s "$WORK/compose.new" ] && ! cmp -s "$WORK/compose.new" "$COMPOSE_FILE"; then
     log "docker-compose.yml aus Version $TO übernommen"
-    cp "$CTL/compose.new" "$COMPOSE_FILE"
+    cp "$WORK/compose.new" "$COMPOSE_FILE"
   fi
   set_version "$TO"
 
   status restarting "Starte Version $TO ..."
-  compose up -d --no-deps "$SERVICE" >>"$CTL/update.log" 2>&1
+  compose up -d --no-deps "$SERVICE" >>"$LOG" 2>&1
+  publish_log
   status checking "Prüfe Version $TO ..."
   if healthy "$TO"; then
     log "Version $TO läuft"
     # Optionaler Slicer-Dienst: läuft er, mit der (evtl. neuen) Version aus der Compose-Datei neu
     # starten. Ein Fehler hier rollt die App nicht zurück.
     if [ -n "$(docker ps -q --filter "label=com.docker.compose.project=$PROJECT" --filter "label=com.docker.compose.service=slicer")" ]; then
-      compose up -d --no-deps slicer >>"$CTL/update.log" 2>&1 || log "Slicer-Dienst konnte nicht aktualisiert werden"
+      compose up -d --no-deps slicer >>"$LOG" 2>&1 || log "Slicer-Dienst konnte nicht aktualisiert werden"
     fi
     status done "Version $TO ist installiert."
-    if [ -s "$CTL/updater.new" ] && ! cmp -s "$CTL/updater.new" "$SELF"; then
+    if [ -s "$WORK/updater.new" ] && ! cmp -s "$WORK/updater.new" "$SELF"; then
       # Neues Updater-Skript: übernehmen und beenden - Docker startet den Container damit neu.
       log "Updater-Skript aus Version $TO übernommen, Neustart"
-      cp "$CTL/updater.new" "$SELF"
+      cp "$WORK/updater.new" "$SELF"
       exit 0
     fi
     return
   fi
 
   log "Version $TO meldet sich nicht - zurück auf $FROM"
-  cp "$CTL/compose.prev" "$COMPOSE_FILE"
+  cp "$WORK/compose.prev" "$COMPOSE_FILE"
   set_version "$FROM"
-  compose up -d --no-deps "$SERVICE" >>"$CTL/update.log" 2>&1
+  compose up -d --no-deps "$SERVICE" >>"$LOG" 2>&1
+  publish_log
   if healthy "$FROM"; then
     status rolled-back "Version $TO startete nicht korrekt - Version $FROM läuft wieder (siehe update.log)."
   else
@@ -180,9 +202,9 @@ check_registry() {
   auth=$(tr -d '\n\t\r ' < "$cfg" 2>/dev/null | sed -n 's/.*"ghcr.io":{"auth":"\([^"]*\)".*/\1/p')
   if [ -z "$auth" ]; then
     if image_public; then
-      printf '{"ok":true,"public":true,"expires":"","message":"","at":%s}\n' "$(date +%s)" > "$CTL/registry.json"
+      printf '{"ok":true,"public":true,"expires":"","message":"","at":%s}\n' "$(date +%s)" | put registry.json
     else
-      printf '{"ok":false,"expires":"","message":"Keine Anmeldung bei ghcr.io gespeichert","at":%s}\n' "$(date +%s)" > "$CTL/registry.json"
+      printf '{"ok":false,"expires":"","message":"Keine Anmeldung bei ghcr.io gespeichert","at":%s}\n' "$(date +%s)" | put registry.json
     fi
     return
   fi
@@ -192,9 +214,9 @@ check_registry() {
   status=$(printf '%s' "$headers" | sed -n 's/^ *HTTP\/[0-9.]* \([0-9]*\).*/\1/p' | tail -1)
   expires=$(printf '%s' "$headers" | sed -n 's/^ *[Gg]ithub-[Aa]uthentication-[Tt]oken-[Ee]xpiration: *\(.*\)$/\1/p' | tr -d '\r' | head -1)
   if [ "$status" = "200" ]; then
-    printf '{"ok":true,"expires":"%s","message":"","at":%s}\n' "$expires" "$(date +%s)" > "$CTL/registry.json"
+    printf '{"ok":true,"expires":"%s","message":"","at":%s}\n' "$expires" "$(date +%s)" | put registry.json
   else
-    printf '{"ok":false,"expires":"%s","message":"Token für ghcr.io ungültig oder abgelaufen (HTTP %s)","at":%s}\n' "$expires" "${status:-?}" "$(date +%s)" > "$CTL/registry.json"
+    printf '{"ok":false,"expires":"%s","message":"Token für ghcr.io ungültig oder abgelaufen (HTTP %s)","at":%s}\n' "$expires" "${status:-?}" "$(date +%s)" | put registry.json
   fi
 }
 
@@ -213,7 +235,8 @@ watch_app() {
   esac
   if [ "$state" = "running" ] && wget -qO- -T 10 "$HEALTH_URL" 2>/dev/null | grep -q '"ok":true'; then
     if [ -n "$OUTAGE_START" ]; then
-      echo "$OUTAGE_START $(date +%s)" >> "$CTL/outages.log"
+      echo "$OUTAGE_START $(date +%s)" >> "$OUTAGES"
+      put outages.log < "$OUTAGES"
       log "App wieder erreichbar"
       OUTAGE_START=""
     fi
@@ -224,20 +247,29 @@ watch_app() {
   [ -z "$OUTAGE_START" ] && OUTAGE_START=$(date +%s) && log "App antwortet nicht ($state)"
   if [ "$FAILS" -ge 3 ] && [ "$state" = "running" ]; then
     log "App hängt seit 3 Prüfungen - Neustart"
-    docker restart "$APP_CONTAINER" >>"$CTL/update.log" 2>&1
+    docker restart "$APP_CONTAINER" >>"$LOG" 2>&1
+    publish_log
     FAILS=0
   fi
 }
 
 mkdir -p "$CTL"
-touch "$CTL/update.log"
-# Protokoll klein halten
-tail -n 500 "$CTL/update.log" > "$CTL/update.log.tmp" && mv "$CTL/update.log.tmp" "$CTL/update.log"
+rm -rf "$WORK"
+mkdir -p "$WORK" && chmod 700 "$WORK" || { echo "Arbeitsordner $WORK nicht anlegbar" >&2; exit 1; }
+# Bisheriges Protokoll und die Ausfall-Liste übernehmen (nur echte Dateien lesen; klein halten), danach
+# hier weiterführen
+plain() { [ -f "$1" ] && [ ! -L "$1" ]; }
+: > "$LOG"
+: > "$OUTAGES"
+plain "$CTL/update.log" && tail -n 500 "$CTL/update.log" > "$LOG" 2>/dev/null
+plain "$CTL/outages.log" && tail -n 500 "$CTL/outages.log" > "$OUTAGES" 2>/dev/null
+# Reste früherer Versionen, die ihre Arbeitsdateien noch im gemeinsamen Volume abgelegt haben
+rm -f "$CTL/compose.new" "$CTL/updater.new" "$CTL/compose.prev"
 log "Updater bereit (Projekt $PROJECT, Image $IMAGE)"
 
 while true; do
   heartbeat
-  if [ -f "$CTL/request" ]; then
+  if plain "$CTL/request"; then
     TO=$(head -c 40 "$CTL/request" | tr -cd '0-9.')
     ID=$(date +%s)
     rm -f "$CTL/request"

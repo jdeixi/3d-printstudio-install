@@ -19,6 +19,9 @@ services:
       DB_ENCRYPTION_KEY: ${DB_ENCRYPTION_KEY:?DB_ENCRYPTION_KEY fehlt in .env / missing in .env}
       # Einrichtungscode für den ersten Benutzer / setup code for the first user (.env)
       SETUP_CODE: ${SETUP_CODE:-}
+      # Zahl der Reverse Proxys vor der App (leer = automatisch) - bestimmt, welche Besucher-Adresse für die
+      # Schutzgrenzen zählt / number of reverse proxies in front of the app (empty = automatic), see .env.example
+      TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-}
       # Sofort-Preis aus 3D-Modellen (optional, COMPOSE_PROFILES=slicer in .env) / instant price from
       # 3D models (optional, COMPOSE_PROFILES=slicer in .env)
       SLICER_TOKEN: ${SLICER_TOKEN:-}

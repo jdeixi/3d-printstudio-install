@@ -90,6 +90,12 @@ Caddy, Traefik, Nginx Proxy Manager oder den Reverse Proxy der Synology). Der Mi
 liegt unter `/admin`; er sollte zusätzlich geschützt werden (z. B. Zwei-Faktor-Anmeldung vor dem
 Proxy). Details im Handbuch, Kapitel 2.
 
+Die App begrenzt Anmeldeversuche und Ähnliches je Besucher-Adresse. Dafür nimmt sie die Adresse, die der Proxy
+im Header `X-Forwarded-For` anhängt; mit einem Proxy passt das von selbst. Steht davor ein weiterer mit
+öffentlicher Adresse (z. B. Cloudflare), in der `.env` `TRUSTED_PROXY_HOPS=2` setzen, sonst zählen viele
+Besucher gemeinsam (die App weist unter Info → System darauf hin). Der Port der App selbst (3000) sollte nicht
+aus dem Internet erreichbar sein, nur der Proxy.
+
 #### Eigenes Proxy-Netzwerk und eigener Datenordner
 
 Beides geht über eine `docker-compose.override.yml`, die Updates nicht anfassen und der Update-Container
@@ -222,6 +228,12 @@ access and can only be reached by the app.
 For the customer portal and online shop, put the app behind a reverse proxy with HTTPS (e.g. Caddy,
 Traefik, Nginx Proxy Manager or the Synology reverse proxy). The staff area is under `/admin`; protect
 it additionally (e.g. two-factor sign-in in front of the proxy). Details in the manual, chapter 2.
+
+The app limits sign-in attempts and the like per visitor address. It uses the address the proxy appends to the
+`X-Forwarded-For` header; with a single proxy this works by itself. If another one with a public address sits in
+front (e.g. Cloudflare), set `TRUSTED_PROXY_HOPS=2` in the `.env` file, otherwise many visitors count together
+(the app points it out under Info → System). The port of the app itself (3000) should not be reachable from the
+internet, only the proxy.
 
 #### Own proxy network and own data folder
 
