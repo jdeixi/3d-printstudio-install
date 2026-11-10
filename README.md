@@ -66,6 +66,13 @@ wenn die neue nicht startet. Von Hand: `APP_VERSION` in der `.env` setzen, dann
 - Datenbank und hochgeladene Dateien liegen im Docker-Volume `3d-printstudio_app-data`.
 - Die App sichert sich täglich selbst in den Ordner `backups/` (einstellbar unter Grundeinstellungen
   → Import / Export). Diesen Ordner zusätzlich auf ein anderes Laufwerk oder extern sichern.
+- Eine Sicherung enthält alle Daten und die gespeicherten Zugangsdaten. Unter Grundeinstellungen → Import /
+  Export → Verschlüsselung lässt sie sich mit einem Passwort verschlüsseln (Dateien `…zip.enc`). Das Passwort
+  getrennt von den Sicherungen aufbewahren: Ohne es ist eine verschlüsselte Sicherung nicht mehr lesbar.
+  Entschlüsseln geht auch ohne die App, mit `openssl` (fragt nach dem Passwort):
+  `openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -md sha256 -in sicherung.zip.enc -out sicherung.zip`
+- Die Kopien der Datenbank in `backups/vor-migration/` (nächster Punkt) sind nicht verschlüsselt; sie bleiben
+  auf dem Server und gehen nicht an den zweiten Speicherort.
 - Bringt ein Update Änderungen an der Datenbank mit, legt die App beim Start vorher eine Kopie der
   Datenbank in `backups/vor-migration/` an (die letzten fünf bleiben). Klappt das nicht, startet die neue
   Version nicht und der Update-Container stellt die vorige wieder her. Zurückspielen (App gestoppt, mit der
@@ -206,6 +213,13 @@ doesn't start. Manually: set `APP_VERSION` in `.env`, then `docker compose up -d
 - Database and uploaded files live in the Docker volume `3d-printstudio_app-data`.
 - The app backs itself up daily into the `backups/` folder (configurable under Basic settings →
   Import / Export). Also back this folder up to another drive or off-site.
+- A backup contains all data and the stored credentials. Under Basic settings → Import / Export → Encryption
+  you can encrypt it with a password (files `…zip.enc`). Keep the password separate from the backups: without
+  it an encrypted backup can no longer be read. Decrypting also works without the app, with `openssl` (it asks
+  for the password):
+  `openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -md sha256 -in backup.zip.enc -out backup.zip`
+- The database copies in `backups/vor-migration/` (next item) are not encrypted; they stay on the server and
+  are not sent to the second storage location.
 - If an update changes the database, the app first saves a copy of the database to
   `backups/vor-migration/` on start (the last five are kept). If that fails, the new version does not
   start and the update container restores the previous one. To restore (app stopped, previous version in
