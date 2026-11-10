@@ -142,7 +142,7 @@ verwenden.
 
 ## Handbuch
 
-Das Benutzerhandbuch (Deutsch und Englisch, PDF) liegt bei jeder Version unter
+Das Benutzerhandbuch (Deutsch, Englisch, Französisch und Italienisch, PDF) liegt bei jeder Version unter
 [Releases](https://github.com/jdeixi/3d-printstudio-install/releases).
 
 ## Beispieldaten
@@ -293,7 +293,7 @@ one person on one computer; for several users, customer portal and shop use the 
 
 ## Manual
 
-The user manual (German and English, PDF) is attached to every version under
+The user manual (German, English, French and Italian, PDF) is attached to every version under
 [Releases](https://github.com/jdeixi/3d-printstudio-install/releases).
 
 ## Sample data
