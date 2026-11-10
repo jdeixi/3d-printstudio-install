@@ -147,7 +147,7 @@ Das Benutzerhandbuch (Deutsch und Englisch, PDF) liegt bei jeder Version unter
 
 ## Beispieldaten
 
-Im Ordner [`beispieldaten`](beispieldaten) liegen Filament-Typen, Hersteller, 72 Filamente und Verbrauchsmaterial
+Im Ordner [`beispieldaten`](beispieldaten) liegen Filament-Typen, Hersteller, 71 Filamente und Verbrauchsmaterial
 zum Einlesen, als größere Auswahl neben den 13 Beispiel-Filamenten einer neuen Installation. Die Anleitung steht
 dort in der `README.md`.
 
@@ -298,6 +298,6 @@ The user manual (German and English, PDF) is attached to every version under
 
 ## Sample data
 
-The folder [`beispieldaten`](beispieldaten) holds filament types, manufacturers, 72 filaments and consumables
+The folder [`beispieldaten`](beispieldaten) holds filament types, manufacturers, 71 filaments and consumables
 to import, as a larger selection next to the 13 example filaments of a new installation. The instructions are in
 its `README.md`.

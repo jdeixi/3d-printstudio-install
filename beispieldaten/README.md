@@ -11,7 +11,7 @@ diesen Dateien hat der Kostenrechner gleich eine größere Auswahl.
 | `filament-typen-export.csv` | 22 Filament-Typen (PLA, PETG, PA-CF, TPU …) |
 | `filament-hersteller-export.csv` | 7 Hersteller |
 | `datenblaetter-export.zip` | technische Datenblätter der Hersteller als PDF – nur, wenn die Datei in diesem Ordner liegt |
-| `filamente-export.csv` | 72 Filamente mit Farbe, Preis je kg, Spulengewicht, Dichte, Durchmesser und Bestand |
+| `filamente-export.csv` | 71 Filamente mit Farbe, Preis je kg, Spulengewicht, Dichte, Durchmesser und Bestand |
 | `verbrauchsmaterial-export.csv` | 20 Verschleiß- und Ersatzteile (Hotends, Druckplatten, Schneidmatten …) mit Preis, Lebensdauer und Bestand |
 
 ## Einlesen
@@ -37,7 +37,7 @@ später in der Datenblatt-Bibliothek hochladen und beim Filament auswählen.
   die Auswahl neben der Datei: **Ersetzen** überschreibt den Eintrag mit der Zeile aus der Datei,
   **Überspringen** lässt ihn, wie er ist. Typen und Hersteller werden nach ihrem Namen erkannt.
 - **Vorhandenes bleibt.** Die 13 Beispiel-Filamente einer neuen Installation und eigene Einträge bleiben
-  bestehen, die Beispieldaten kommen dazu (nach dem Einlesen in eine neue Installation sind es 85 Filamente).
+  bestehen, die Beispieldaten kommen dazu (nach dem Einlesen in eine neue Installation sind es 84 Filamente).
 - Die Datenblätter gehören den jeweiligen Herstellern.
 
 ---
@@ -57,7 +57,7 @@ calculator has a larger selection right away.
 | `filament-typen-export.csv` | 22 filament types (PLA, PETG, PA-CF, TPU …) |
 | `filament-hersteller-export.csv` | 7 manufacturers |
 | `datenblaetter-export.zip` | the manufacturers' technical data sheets as PDF – only if the file is in this folder |
-| `filamente-export.csv` | 72 filaments with colour, price per kg, spool weight, density, diameter and stock |
+| `filamente-export.csv` | 71 filaments with colour, price per kg, spool weight, density, diameter and stock |
 | `verbrauchsmaterial-export.csv` | 20 wear and spare parts (hotends, build plates, cutting mats …) with price, lifetime and stock |
 
 The names and notes in the files are in German and English as the manufacturers use them.
@@ -85,5 +85,5 @@ later in the datasheet library and select it at the filament.
   next to the file decides: **Replace** overwrites the entry with the row from the file, **Skip** leaves it
   as it is. Types and manufacturers are recognised by their name.
 - **Existing entries stay.** The 13 example filaments of a new installation and your own entries remain, the
-  sample data is added (after importing into a new installation there are 85 filaments).
+  sample data is added (after importing into a new installation there are 84 filaments).
 - The data sheets belong to their respective manufacturers.
