@@ -1,0 +1,73 @@
+id,manufacturer,materialType,name,manufacturerCode,colorHex,pricePerKg,spoolWeightG,density,diameterMm,stockG,minStockG,notes,datasheetHash
+cmt1sg03l00054codq1o72e0c,Bambu Lab,PETG,PETG Basic,Black(30105),#000000,26.21,1000,1.25,1.75,6000,,,fc23b725a4632bd931f28d0076461180e0ba87b7c2ddb6b1f16478ad5c5db6c6
+cmt2sjzd300004fnjden5d61z,Bambu Lab,PETG,PETG Basic,Orange (30301),#FF6A00,26.21,1000,1.25,1.75,1000,,,fc23b725a4632bd931f28d0076461180e0ba87b7c2ddb6b1f16478ad5c5db6c6
+cmt42j32o00004fmsc0yteium,Bambu Lab,PETG,PETG Basic,Green(30502),#00B900,26.21,1000,1.25,1.75,1000,,,fc23b725a4632bd931f28d0076461180e0ba87b7c2ddb6b1f16478ad5c5db6c6
+cmt42ktsi00014fms9nzqfbn5,Bambu Lab,PETG,PETG Basic,Red(30201),#E32400,26.21,1000,1.25,1.75,1000,,,fc23b725a4632bd931f28d0076461180e0ba87b7c2ddb6b1f16478ad5c5db6c6
+cmt42lr5r00024fms57mki18w,Bambu Lab,PETG,PETG Basic,Navy Blue(30604),#0042AA,26.21,1000,1.25,1.75,1000,,,fc23b725a4632bd931f28d0076461180e0ba87b7c2ddb6b1f16478ad5c5db6c6
+cmt42opwu00044fms1zqrb81p,Bambu Lab,PETG,PETG Basic,Yellow(30402),#F5EC00,26.21,1000,1.25,1.75,750,,,fc23b725a4632bd931f28d0076461180e0ba87b7c2ddb6b1f16478ad5c5db6c6
+cmt42sc3x00054fmsuo94pct4,Bambu Lab,PETG,PETG Basic,White(30106),#FFFFFF,26.21,1000,1.25,1.75,6000,,,fc23b725a4632bd931f28d0076461180e0ba87b7c2ddb6b1f16478ad5c5db6c6
+cmt1sg07s00064codxdz51uu4,Bambu Lab,PETG,PETG HF,Schwarz (33102),#000000,26.21,1000,1.28,1.75,3000,,,51981f734b941947f3fe696cc370c1a4b7419f4eb4cffa77ea97c3d5d4b53ab4
+cmt1vsfw100003gl6xdm53x3u,Bambu Lab,PETG,PETG HF,Weiß (33100),#FFFFFF,26.21,1000,1.28,1.75,2000,,,51981f734b941947f3fe696cc370c1a4b7419f4eb4cffa77ea97c3d5d4b53ab4
+cmt44eifn000o4fmsao7ghiqi,Bambu Lab,PETG,PETG HF,Waldgrün (33502),#39541A,26.21,1000,1.28,1.75,1000,,,51981f734b941947f3fe696cc370c1a4b7419f4eb4cffa77ea97c3d5d4b53ab4
+cmt45v2yd00004ep1k6w6bkrd,Bambu Lab,PETG Translucent,PETG Translucent,Translucent Light Blue (32600),#61B0FF,23.2,1000,1.25,1.75,800,,,c10469d003d22c496a7f6d05912f7d28583c72d2208a869cd0b1bf07fc780901
+cmt42wwi300064fmsxw83xlgx,Bambu Lab,PLA,PLA Basic,Jade White (10100),#FFFFFF,23.2,1000,1.28,1.75,4000,,,44c00d8398cba7fbdb8fdcd13886ab904f78826d9eefa531a95118b6891201b3
+cmt42y1am00074fmsad7fa2c3,Bambu Lab,PLA,PLA Basic,Black (10101),#000000,23.2,1000,1.28,1.75,5000,,,44c00d8398cba7fbdb8fdcd13886ab904f78826d9eefa531a95118b6891201b3
+cmt43mczx000j4fmsrqbkz4l3,Bambu Lab,PLA,PLA Basic,Sonnenblumen-Gelb (10402),#FEC600,23.2,1000,1.24,1.75,1000,,,44c00d8398cba7fbdb8fdcd13886ab904f78826d9eefa531a95118b6891201b3
+cmt447b4n000k4fmsjhsu9k9g,Bambu Lab,PLA,PLA Basic,Kobaltblau (10604),#0056B8,23.2,1000,1.24,1.75,1000,,,44c00d8398cba7fbdb8fdcd13886ab904f78826d9eefa531a95118b6891201b3
+cmt448cg3000l4fmsanf04gg9,Bambu Lab,PLA,PLA Basic,Kakaobraun (10802),#6F5034,23.2,1000,1.24,1.75,2000,,,44c00d8398cba7fbdb8fdcd13886ab904f78826d9eefa531a95118b6891201b3
+cmt44aba6000m4fmswz3g71z3,Bambu Lab,PLA,PLA Basic,Indigo-Violett (10701),#482960,23.2,1000,1.24,1.75,1150,,,44c00d8398cba7fbdb8fdcd13886ab904f78826d9eefa531a95118b6891201b3
+cmt44bab3000n4fmspdojc548,Bambu Lab,PLA,PLA Basic,Kürbis-Orange (10301),#FF9016,23.2,1000,1.24,1.75,1000,,,44c00d8398cba7fbdb8fdcd13886ab904f78826d9eefa531a95118b6891201b3
+cmt45yh8000024ep1556d24k3,Bambu Lab,PLA,PLA Basic,Bright Green (10503),#BECF00,23.2,1000,1.24,1.75,1000,,,44c00d8398cba7fbdb8fdcd13886ab904f78826d9eefa531a95118b6891201b3
+cmt466nlg00054ep1v2vsuy1k,Bambu Lab,PLA,PLA Basic,Beige (10201),#F7E6DE,23.2,1000,1.24,1.75,1300,,,fc23b725a4632bd931f28d0076461180e0ba87b7c2ddb6b1f16478ad5c5db6c6
+cmtfigdww00074fo5o2yw49sv,Bambu Lab,PLA,PLA Basic,Hot Pink,#F5547C,23.99,1000,1.1,1.75,1600,,,44c00d8398cba7fbdb8fdcd13886ab904f78826d9eefa531a95118b6891201b3
+cmtfi93e600054fo5c4b2avlm,Bambu Lab,PLA Galaxy,PLA Galaxy,Grün,#3B665E,27.99,1000,1.2,1.75,400,,,
+cmt433rtf00094fmsuwikhqjd,Bambu Lab,PLA Matte,PLA Matte,Kohlschwarz (11101),#000000,23.2,1000,1.31,1.75,2000,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt434lxk000a4fms0igkcg5y,Bambu Lab,PLA Matte,PLA Matte,Elfenbeinweiß (11100),#FFFFFF,23.2,1000,1.31,1.75,4000,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt435cjt000b4fmsf4lmxxis,Bambu Lab,PLA Matte,PLA Matte,Eisblau (11601),#A3D8E1,23.2,1000,1.31,1.75,2000,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt4395kg000c4fmsjlgao9cj,Bambu Lab,PLA Matte,PLA Matte,Marineblau (11600),#0078BF,23.2,1000,1.31,1.75,1000,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt43ammp000d4fmsi9ukr9qn,Bambu Lab,PLA Matte,PLA Matte,Dunkelblau (11602),#042F56,23.2,1000,1.31,1.75,1000,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt43dcsm000e4fmskmojf5du,Bambu Lab,PLA Matte,PLA Matte,Wüstenbraun (11401),#E8DBB7,23.2,1000,1.31,1.75,2000,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt43g1uu000f4fms0ssnfsg6,Bambu Lab,PLA Matte,PLA Matte,Himmelblau (11603),#56B7E6,23.2,1000,1.31,1.75,1000,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt43h7k9000g4fmst7hn1e4u,Bambu Lab,PLA Matte,PLA Matte,Dunkel-Schokoladenbraun (11802),#4D3324,23.2,1000,1.31,1.75,1500,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt43jdig000h4fms1k6i7j2p,Bambu Lab,CPE-HT,PLA Matte,Nardo-Grau (11104),#757575,23.2,1000,1.31,1.75,0,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt43k65j000i4fmsglzh58af,Bambu Lab,PLA Matte,PLA Matte,Terrakotta (11203),#B15533,23.2,1000,1.31,1.75,800,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt44lq82000r4fmst7f8bh5o,Bambu Lab,PLA Matte,PLA Matte,Matte Scarlet Red (11200),#DE4343,23.2,1000,1.31,1.75,1300,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt45o2sp00004fpes3ytrhmu,Bambu Lab,PLA Matte,PLA Matte,Matte Grass Green (11500),#61C680,23.2,1000,1.31,1.75,1000,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmt45w83300014ep1qj69b2m1,Bambu Lab,PLA Matte,PLA Matte,Matte Apple Green (11502),#C2E189,23.2,1000,1.31,1.75,2000,,,1c7995eb8103ba38546ed2bb7e7c0ba4d451b20b5f57a8d9cce5b4f81553aea8
+cmtfii2m400084fo5hc3wtkxk,Bambu Lab,PLA Silk,PLA Silk,Pink,#EEB1C1,32,1000,1.2,1.75,800,,,
+cmtfij5xe00094fo58rnkhudb,Bambu Lab,PLA Silk,PLA Silk,Silber,#ACB4B5,32,1000,1.1,1.75,600,,,
+cmtfjuine000o4fo5mure4dux,Bambu Lab,PLA Silk,PLA Silk,Champagne,#F3CFB2,34,1000,1.1,1.75,900,,,
+cmtfjmhwl000l4fo567q9uc83,Bambu Lab,PLA Sparkle,PLA Sparkle,Onyx Blake,#2D2B28,29.9,1000,1.1,1.75,800,,,
+cmt42n5oj00034fmsl36ib75t,Bambu Lab,PLA Tough+,PLA Tough+,Gelb (12401),#F5EC00,27.22,1000,1.21,1.75,800,,,b71340d09d13a5c78080a4831787f6768c631ded42344aaa7274ce9542263c8a
+cmt42zw0u00084fmsgpnd0vib,Bambu Lab,PLA Tough+,PLA Tough+,Weiß (12107),#FFFFFF,27.22,1000,1.21,1.75,1000,,,b71340d09d13a5c78080a4831787f6768c631ded42344aaa7274ce9542263c8a
+cmt4610br00044ep144fil2uf,Bambu Lab,PLA Wood,PLA Wood,Clay Brown (13801) / 1 kg,#995F11,25.4,1000,1.21,1.75,300,,,0d4a7db697bb84866f7852860a81035d5329a645008844ba0f39a03d80bddf52
+cmt44gcxd000p4fmsb41403fh,Bambu Lab,TPU for AMS,TPU for AMS,Black (53101),#000000,40.33,1000,1.2,1.75,1000,,,587ca053a17fdeb1b40d5e639b178c5d980f4c440789d8c2842d67057a0b9b8c
+cmt44h0tk000q4fmsiqvf938a,Bambu Lab,TPU for AMS,TPU for AMS,White (53100),#FFFFFF,40.33,1000,1.2,1.75,700,,,587ca053a17fdeb1b40d5e639b178c5d980f4c440789d8c2842d67057a0b9b8c
+cmtfiyceu000c4fo5belezarb,Elegoo,PETG,PETG Rapid,Schwarz,#000000,24,1000,1.1,1.75,100,,,
+cmtfjiqsr000j4fo5xwifc91l,Elegoo,PETG,PETG Rapid,Grün,#3F9142,19.99,1000,1.1,1.75,950,,,
+cmtfjjvkf000k4fo529w1wg1f,Elegoo,PETG,PETG Rapid,Space Grey,#7E7E7E,19.99,1000,1.1,1.75,950,,,
+cmtfjz8z7000r4fo50ng13f4w,Elegoo,PETG,PETG Rapid,Weiß,#FFFFFF,19.99,1000,1.1,1.75,600,,,
+cmtfiz5w9000d4fo54hlx4vwh,Elegoo,PLA,PLA,Dark Blue,#011D57,19.99,1000,1.1,1.75,1000,,,
+cmtfjyi4n000q4fo54v1juhha,Elegoo,PLA,PLA,"Transparent, Clear",#DEDEDE,19.99,1000,1.1,1.75,950,,,
+cmtfjzzx2000s4fo5tmcl6y1t,Elegoo,PLA,PLA,Schwarz,#000000,19.99,1000,1.1,1.75,120,,,
+cmtfiwumr000b4fo5y53qhvdl,Elegoo,PLA +,PLA +,Space Grey,#474747,19.99,1000,1.1,1.75,60,,,
+cmtficow800064fo5m5xlg7wq,Elegoo,PLA Galaxy,PLA Galaxy,Peacock Blue,#0E3D6C,27.99,1000,1.1,1.75,600,,,
+cmtfi1i3z00014fo5de4mbm0g,Elegoo,PLA Matte,PLA MAtte,Navy Blue,#000026,19.99,1000,1.1,1.75,400,,,
+cmtfhzbfx00004fo52900d2by,Elegoo,PLA Matte,PLA Matte,1-2404-0427,#E7FFE7,19.9,1000,1.12,1.75,150,,,
+cmtfjw7t2000p4fo5xo4vog9n,Elegoo,PLA Silk,PLA Silk,Bronze,#B37A56,19.99,1000,1.1,1.75,450,,,
+cmtfj0a46000e4fo53de6zm8x,Elegoo,PLA +,PLA#,Pink,#FDA3FF,19.99,1000,1.1,1.75,90,,,
+cmtfivmh6000a4fo5yvsz9qrm,Elegoo,PLA +,PLA+,White,#FFFFFF,19.99,1000,1.1,1.75,130,,,
+cmtfj2hsj000g4fo5q7s3w19i,Elegoo,PLA +,PLA+,Wood Color,#9A7B4F,19.99,1000,1.1,1.75,300,,,
+cmtfj4jfd000h4fo528q5w88t,Elegoo,PLA +,PLA+,Orange,#FF6A00,19.99,1000,1.1,1.75,320,,,
+cmtfj4mio000i4fo5h8emt9jb,Elegoo,PLA +,PLA+,Orange,#FF6A00,19.99,1000,1.1,1.75,320,,,
+cmtfjnmwu000m4fo5xcn6gmth,Elegoo,PLA +,PLA+,Rot,#DB1600,19.99,1000,1.1,1.75,800,,,
+cmtfjohx8000n4fo5fyr3jhtg,Elegoo,PLA +,PLA+,Gelb,#FFE820,19.99,1000,1.1,1.75,900,,,
+cmt2rzyq900064fo0dcj3csdc,Fiberlogy,CPE-HT,CPE HT,CPE HT,#000000,54.65,750,1.18,1.75,750,,,94040f2e814dc1dbde501853af47ada027adb2002aeb098b5d10027af1af8426
+cmt2s11df00074fo0ur3ak7ig,Fiberlogy,PETG-FR,PETG FR V 0,PETG FR V 0,#000000,61.16,850,1.26,1.75,850,,,028bf5ab9ed11ca647ce2fe0afe8d5ce9a2f50745087c5e28b1e1aa2713e0bad
+cmt2jfhdj00004fs76d519byu,Fiberlogy,PETG-CF,PETG+CF,PETG+CF,#000000,53.32,750,1.27,1.75,750,,,09dadc728da8c63242cb1a8584722a7e5c730cc2580db44c142b5990b32f244b
+cmt6y7i5300044epowhpr9395,Nobufil,PLA,PLAx,Artist Grey LA-M-703-1-010,#D6D6D6,34.99,1000,1.19,1.75,2500,1000,Speziell für Modelle die nachher angemalt werden.,84f26c1ec84d765f434ef7aaad334755c26c34c91d6d51e73f600c8ad58c44ba
+cmt2lqmni00014glu29vmiqcc,Polymaker Fiberon™,PA-CF,PA612-CF15,PA612-CF15,#000000,79.98,500,1.03,1.75,500,,,c5493c6d2eacfafaf63b5438915a3135863a2dd4e8282254a8742628df9cc539
+cmt2luah800034glu87a7w47z,Polymaker Fiberon™,PET-CF,PET-CF17,PET-CF17,#000000,49.98,500,1.37,1.75,500,200,,e428695f47a99ae1d980bea0e21df700dcec366f8e755c756da94e96335402a0
+cmt2qthxt00004fo0ld7zxgjg,Sunlu,PETG,PETG,Bone White,#EFE6C7,15.99,1000,1.3,1.75,2000,,,8ec15117dfe18781e591a7bcd4ca3f790878386f48a7d00cf25c18af9735f7a6
+cmt2qug8t00014fo0ul1080rz,Sunlu,PLA Matte,PLA Matte,Bone White,#EFE6C7,13.99,1000,1.3,1.75,2000,,,04ff55cd100379dbe00036ee68bb272ce1cf1432987676831cc0fbf038f45e5b
+cmtfi4k1s00034fo50j6e2swf,Sunlu,PLA Silk,PLA Silk,Red Copper,#FF6D60,24,1000,1.12,1.75,1000,,,

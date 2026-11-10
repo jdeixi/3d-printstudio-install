@@ -145,6 +145,12 @@ verwenden.
 Das Benutzerhandbuch (Deutsch und Englisch, PDF) liegt bei jeder Version unter
 [Releases](https://github.com/jdeixi/3d-printstudio-install/releases).
 
+## Beispieldaten
+
+Im Ordner [`beispieldaten`](beispieldaten) liegen Filament-Typen, Hersteller, 72 Filamente und Verbrauchsmaterial
+zum Einlesen, als größere Auswahl neben den 13 Beispiel-Filamenten einer neuen Installation. Die Anleitung steht
+dort in der `README.md`.
+
 ---
 
 <a id="english"></a>
@@ -289,3 +295,9 @@ one person on one computer; for several users, customer portal and shop use the 
 
 The user manual (German and English, PDF) is attached to every version under
 [Releases](https://github.com/jdeixi/3d-printstudio-install/releases).
+
+## Sample data
+
+The folder [`beispieldaten`](beispieldaten) holds filament types, manufacturers, 72 filaments and consumables
+to import, as a larger selection next to the 13 example filaments of a new installation. The instructions are in
+its `README.md`.
