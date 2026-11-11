@@ -27,7 +27,9 @@ else
 fi
 
 say "==> Lade Dateien nach $DIR / downloading files to $DIR"
-mkdir -p updater backups
+# backups und modell-eingang hier anlegen: So gehören sie dir und nicht root (sonst legt Docker sie an)
+# create backups and modell-eingang here: that way they belong to you, not root (Docker would create them)
+mkdir -p updater backups modell-eingang
 get "$BASE/docker-compose.yml" docker-compose.yml
 get "$BASE/updater/updater.sh" updater/updater.sh
 get "$BASE/.env.example" .env.example
@@ -45,8 +47,22 @@ else
   # Einrichtungscode für den ersten Benutzer (8 Zeichen ohne 0/O/1/I) / setup code for the first user
   CODE="$(LC_ALL=C tr -dc 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' < /dev/urandom | head -c 8)"
   CODE="$(printf '%s-%s' "$(printf '%s' "$CODE" | cut -c1-4)" "$(printf '%s' "$CODE" | cut -c5-8)")"
+  # Als normaler Benutzer installiert: Die App läuft im Container als dieser Benutzer - die Ordner oben gehören
+  # ihm, mit ihrem eigenen Benutzer (10002) könnte sie dort nicht schreiben und bliebe bei root. Als root
+  # installiert bleibt beides leer: Die App nimmt ihren eigenen Benutzer und übernimmt die Ordner.
+  # Installed as a regular user: the app runs inside the container as that user - the folders above are theirs;
+  # as its own user (10002) it could not write there and would stay root. Installed as root both stay empty:
+  # the app uses its own user and takes over the folders.
+  RUN_UID="$(id -u 2>/dev/null || true)"
+  RUN_GID="$(id -g 2>/dev/null || true)"
+  case "$RUN_UID$RUN_GID" in *[!0-9]* | "") RUN_UID="" ;; esac
+  if [ -z "$RUN_UID" ] || [ "$RUN_UID" = "0" ]; then
+    RUN_UID=""
+    RUN_GID=""
+  fi
   sed -e "s|^DB_ENCRYPTION_KEY=.*|DB_ENCRYPTION_KEY=$KEY|" -e "s|^PROJECT_DIR=.*|PROJECT_DIR=$DIR|" \
-    -e "s|^SETUP_CODE=.*|SETUP_CODE=$CODE|" -e "s|^SLICER_TOKEN=.*|SLICER_TOKEN=$SLICER|" .env.example > .env
+    -e "s|^SETUP_CODE=.*|SETUP_CODE=$CODE|" -e "s|^SLICER_TOKEN=.*|SLICER_TOKEN=$SLICER|" \
+    -e "s|^APP_UID=.*|APP_UID=$RUN_UID|" -e "s|^APP_GID=.*|APP_GID=$RUN_GID|" .env.example > .env
   chmod 600 .env
   say "==> .env mit neuem Schlüssel angelegt – bitte zusätzlich sicher aufbewahren"
   say "    .env created with a new key – please also keep a safe copy"

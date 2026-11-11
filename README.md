@@ -80,12 +80,15 @@ wenn die neue nicht startet. Von Hand: `APP_VERSION` in der `.env` setzen, dann
   `docker run --rm -v 3d-printstudio_app-data:/data -v "$PWD/backups/vor-migration:/b:ro" alpine cp /b/<datei>.db /data/dev.db`
 - Eigene Anpassungen (Port, zusätzliche Ordner) in eine `docker-compose.override.yml` schreiben – die
   `docker-compose.yml` wird bei Updates ersetzt.
-- Die App läuft im Container ohne Root-Rechte als eigener Benutzer (Nummer 10002) und übernimmt beim Start ihre
-  Ordner; die Dateien in `backups/` und `modell-eingang/` gehören danach diesem Benutzer. Gehört einer der Ordner
-  einem Benutzer deines Servers oder ist ein zusätzlich eingehängter Ordner nur für root beschreibbar, läuft sie
-  wie früher als root weiter und nennt den Grund im Protokoll (`docker compose logs app`). Wie sie läuft, steht
-  auch in der App unter Info → System. Einstellen lässt es sich in der `.env` mit `APP_UID`/`APP_GID` (als
-  dieser Benutzer laufen) oder `APP_RUN_AS_ROOT=1` (ausdrücklich als root).
+- Die App läuft im Container ohne Root-Rechte. Installierst du als normaler Benutzer, trägt `install.sh` dessen
+  Nummer in die `.env` ein (`APP_UID`/`APP_GID`): Die App läuft dann als dieser Benutzer, und die Dateien in
+  `backups/` und `modell-eingang/` gehören dir. Installierst du als root, läuft sie als eigener Benutzer (Nummer
+  10002) und übernimmt beim Start ihre Ordner. Gehört einer der Ordner einem anderen Benutzer deines Servers
+  oder ist ein zusätzlich eingehängter Ordner nur für root beschreibbar, läuft sie wie früher als root weiter und
+  nennt den Grund im Protokoll (`docker compose logs app`) – so auch bei Installationen aus der Zeit vor
+  dieser Regelung, bis du die Nummer selbst einträgst. Wie sie läuft, steht auch in der App unter Info → System.
+  Einstellen lässt es sich in der `.env` mit `APP_UID`/`APP_GID` (als dieser Benutzer laufen) oder
+  `APP_RUN_AS_ROOT=1` (ausdrücklich als root).
 
 ### Sofort-Preis aus 3D-Modellen (optional)
 
@@ -130,8 +133,8 @@ networks:
 
 Der Installationsordner kann dabei auf einer eigenen Platte liegen, z. B. `/storage/3dprintstudio`; `install.sh` trägt
 ihn selbst als `PROJECT_DIR` ein. Im Reverse Proxy (z. B. Nginx Proxy Manager) als Ziel `http`,
-`3d-printstudio-app-1`, Port `3000` eintragen. Die App läuft im Container als root, die Dateien im Ordner gehören also
-meist root. `data/` nur bei gestoppter App kopieren.
+`3d-printstudio-app-1`, Port `3000` eintragen. Die Dateien im Ordner `data/` gehören dem Benutzer, als der die App im
+Container läuft (siehe oben: `APP_UID` bzw. Nummer 10002). `data/` nur bei gestoppter App kopieren.
 
 Der Reverse Proxy muss die echte Adresse der Besucher weitergeben (Header `X-Forwarded-For`) – davon
 hängen die Schutzgrenzen gegen Passwort-Raten und Missbrauch ab. Läuft er selbst als Docker-Container,
@@ -239,12 +242,14 @@ doesn't start. Manually: set `APP_VERSION` in `.env`, then `docker compose up -d
   `docker run --rm -v 3d-printstudio_app-data:/data -v "$PWD/backups/vor-migration:/b:ro" alpine cp /b/<file>.db /data/dev.db`
 - Put your own changes (port, extra folders) into a `docker-compose.override.yml` – the
   `docker-compose.yml` is replaced on updates.
-- The app runs inside the container without root as its own user (number 10002) and takes over its folders on
-  start; the files in `backups/` and `modell-eingang/` then belong to that user. If one of the folders belongs
-  to a user of your server, or an additionally mounted folder is writable for root only, it keeps running as
-  root like before and states the reason in the log (`docker compose logs app`). How it runs is also shown in
-  the app under Info → System. You can set it in `.env` with `APP_UID`/`APP_GID` (run as that user) or
-  `APP_RUN_AS_ROOT=1` (root explicitly).
+- The app runs inside the container without root. If you install as a regular user, `install.sh` enters that
+  user's number in `.env` (`APP_UID`/`APP_GID`): the app then runs as that user, and the files in `backups/` and
+  `modell-eingang/` are yours. If you install as root, it runs as its own user (number 10002) and takes over its
+  folders on start. If one of the folders belongs to another user of your server, or an additionally mounted
+  folder is writable for root only, it keeps running as root like before and states the reason in the log
+  (`docker compose logs app`) – this also applies to installations from before this rule until you enter the
+  number yourself. How it runs is also shown in the app under Info → System. You can set it in `.env` with
+  `APP_UID`/`APP_GID` (run as that user) or `APP_RUN_AS_ROOT=1` (root explicitly).
 
 ### Instant price from 3D models (optional)
 
@@ -288,8 +293,8 @@ networks:
 
 The installation folder can be on a disk of its own, e.g. `/storage/3dprintstudio`; `install.sh` sets it as `PROJECT_DIR`
 by itself. In the reverse proxy (e.g. Nginx Proxy Manager) enter the target `http`, `3d-printstudio-app-1`, port `3000`.
-The app runs as root inside the container, so the files in the folder usually belong to root. Only copy `data/` while
-the app is stopped.
+The files in the `data/` folder belong to the user the app runs as inside the container (see above: `APP_UID` or
+number 10002). Only copy `data/` while the app is stopped.
 
 The reverse proxy must pass on the real address of visitors (header `X-Forwarded-For`) – the limits
 that protect against password guessing and abuse depend on it. If the proxy itself runs as a Docker

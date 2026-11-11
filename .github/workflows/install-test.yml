@@ -28,7 +28,22 @@ jobs:
           done
           curl -fs http://localhost:3000/api/health
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/admin/setup)" = 200
-          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/shop)" = 200
+          # Frische Installation: Bis der erste Benutzer angelegt ist, führt jede Seite zur Ersteinrichtung
+          # (seit 1.5.0 - vorher stand hier "Shop antwortet mit 200", der Test schlug seitdem fehl)
+          curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' http://localhost:3000/shop | tee /dev/stderr | grep -Eq '^30[78] .*/admin/setup$'
+
+      - name: App läuft ohne Root-Rechte
+        run: |
+          cd "$RUNNER_TEMP/3d-printstudio"
+          docker compose logs app | head -6
+          # install.sh lief als normaler Benutzer: Es trägt dessen Nummer ein, die App läuft als dieser Benutzer
+          grep -x "APP_UID=$(id -u)" .env
+          grep -x "APP_GID=$(id -g)" .env
+          test "$(docker compose exec -T app awk '/^Uid:/ {print $2}' /proc/1/status)" = "$(id -u)"
+          test "$(docker compose exec -T app awk '/^CapEff:/ {print $2}' /proc/1/status)" = 0000000000000000
+          # die Ordner neben der docker-compose.yml gehören weiter dem Benutzer, der installiert hat
+          test "$(stat -c %u backups)" = "$(id -u)"
+          test "$(stat -c %u modell-eingang)" = "$(id -u)"
 
       - name: Update-Container läuft
         run: |
@@ -39,4 +54,4 @@ jobs:
       - name: Protokoll bei Fehler
         if: failure()
         run: |
-          cd "$RUNNER_TEMP/3d-printstudio" && docker compose logs --tail 80 || true
+          cd "$RUNNER_TEMP/3d-printstudio" && { docker compose logs app | head -20; docker compose logs --tail 80; } || true
