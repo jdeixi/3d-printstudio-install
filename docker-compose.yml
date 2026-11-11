@@ -28,6 +28,20 @@ services:
       # Eingangsordner der Modellbibliothek (Ordner "modell-eingang" neben dieser Datei) / inbox folder of
       # the model library (folder "modell-eingang" next to this file)
       LIBRARY_INBOX_DIR: /app/modell-eingang
+      # Die App läuft ohne Root-Rechte als eigener Benutzer. Nur setzen, wenn sie als ein bestimmter Benutzer
+      # des Servers laufen soll (APP_UID/APP_GID) oder ausnahmsweise wie früher als root (APP_RUN_AS_ROOT=1),
+      # siehe .env.example / the app runs without root as its own user. Only set these to run as a specific
+      # user of the server (APP_UID/APP_GID) or, as an exception, as root like before (APP_RUN_AS_ROOT=1)
+      APP_UID: ${APP_UID:-}
+      APP_GID: ${APP_GID:-}
+      APP_RUN_AS_ROOT: ${APP_RUN_AS_ROOT:-}
+    # Der Container startet als root, übergibt der App ihre Ordner und gibt dann alle Rechte ab. Dafür bleiben
+    # ihm nur diese fünf; die App selbst läuft ohne jedes Sonderrecht.
+    # The container starts as root, hands the app its folders and then drops all privileges. It keeps only
+    # these five for that; the app itself runs without any special privilege.
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETUID, SETGID]
+    security_opt: ["no-new-privileges:true"]
     networks:
       - default
       - slicer

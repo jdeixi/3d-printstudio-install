@@ -80,6 +80,12 @@ wenn die neue nicht startet. Von Hand: `APP_VERSION` in der `.env` setzen, dann
   `docker run --rm -v 3d-printstudio_app-data:/data -v "$PWD/backups/vor-migration:/b:ro" alpine cp /b/<datei>.db /data/dev.db`
 - Eigene Anpassungen (Port, zusätzliche Ordner) in eine `docker-compose.override.yml` schreiben – die
   `docker-compose.yml` wird bei Updates ersetzt.
+- Die App läuft im Container ohne Root-Rechte als eigener Benutzer (Nummer 10002) und übernimmt beim Start ihre
+  Ordner; die Dateien in `backups/` und `modell-eingang/` gehören danach diesem Benutzer. Gehört einer der Ordner
+  einem Benutzer deines Servers oder ist ein zusätzlich eingehängter Ordner nur für root beschreibbar, läuft sie
+  wie früher als root weiter und nennt den Grund im Protokoll (`docker compose logs app`). Wie sie läuft, steht
+  auch in der App unter Info → System. Einstellen lässt es sich in der `.env` mit `APP_UID`/`APP_GID` (als
+  dieser Benutzer laufen) oder `APP_RUN_AS_ROOT=1` (ausdrücklich als root).
 
 ### Sofort-Preis aus 3D-Modellen (optional)
 
@@ -233,6 +239,12 @@ doesn't start. Manually: set `APP_VERSION` in `.env`, then `docker compose up -d
   `docker run --rm -v 3d-printstudio_app-data:/data -v "$PWD/backups/vor-migration:/b:ro" alpine cp /b/<file>.db /data/dev.db`
 - Put your own changes (port, extra folders) into a `docker-compose.override.yml` – the
   `docker-compose.yml` is replaced on updates.
+- The app runs inside the container without root as its own user (number 10002) and takes over its folders on
+  start; the files in `backups/` and `modell-eingang/` then belong to that user. If one of the folders belongs
+  to a user of your server, or an additionally mounted folder is writable for root only, it keeps running as
+  root like before and states the reason in the log (`docker compose logs app`). How it runs is also shown in
+  the app under Info → System. You can set it in `.env` with `APP_UID`/`APP_GID` (run as that user) or
+  `APP_RUN_AS_ROOT=1` (root explicitly).
 
 ### Instant price from 3D models (optional)
 
