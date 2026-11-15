@@ -199,7 +199,10 @@ image_public() {
 
 check_registry() {
   cfg=/root/.docker/config.json
-  auth=$(tr -d '\n\t\r ' < "$cfg" 2>/dev/null | sed -n 's/.*"ghcr.io":{"auth":"\([^"]*\)".*/\1/p')
+  # ohne gespeicherte Anmeldung gibt es die Datei nicht (öffentliches Image) - dann nicht lesen, sonst meldet die
+  # Shell den fehlenden Pfad im Protokoll, bevor die Umleitung greift
+  auth=""
+  [ -r "$cfg" ] && auth=$(tr -d '\n\t\r ' < "$cfg" | sed -n 's/.*"ghcr.io":{"auth":"\([^"]*\)".*/\1/p')
   if [ -z "$auth" ]; then
     if image_public; then
       printf '{"ok":true,"public":true,"expires":"","message":"","at":%s}\n' "$(date +%s)" | put registry.json

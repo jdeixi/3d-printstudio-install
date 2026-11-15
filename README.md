@@ -61,6 +61,10 @@ Update-Container lädt die neue Version, startet die App neu und kehrt zur vorig
 wenn die neue nicht startet. Von Hand: `APP_VERSION` in der `.env` setzen, dann
 `docker compose up -d`.
 
+Den Update-Container selbst tauscht ein Update nicht aus. Nennen die Versionshinweise ein neues Image für ihn (zuletzt
+1.27.0: `docker:29.9.3-cli`), nach dem Update im Installationsordner einmal `docker compose up -d --no-deps updater`
+ausführen. Bis dahin läuft er mit dem bisherigen Image weiter.
+
 ### Daten und Sicherung
 
 - Datenbank und hochgeladene Dateien liegen im Docker-Volume `3d-printstudio_app-data`.
@@ -222,6 +226,10 @@ create the first admin account if the server is reachable from the internet.
 In the app under **Basic settings → Update**: “Update to v… now” or “Automatic updates” (at night). The update
 container pulls the new version, restarts the app and returns to the previous version if the new one
 doesn't start. Manually: set `APP_VERSION` in `.env`, then `docker compose up -d`.
+
+An update does not replace the update container itself. If the release notes name a new image for it (most recently
+1.27.0: `docker:29.9.3-cli`), run `docker compose up -d --no-deps updater` once in the installation folder after the
+update. Until then it keeps running with its previous image.
 
 ### Data and backup
 

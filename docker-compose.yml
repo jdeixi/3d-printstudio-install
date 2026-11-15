@@ -60,7 +60,7 @@ services:
   # Update container: runs updates started in the app (Basic settings → Update) and restarts the
   # app if it hangs. Only this container gets access to Docker.
   updater:
-    image: docker:27.5.1-cli
+    image: docker:29.9.3-cli
     restart: unless-stopped
     entrypoint: ["/bin/sh", "${PROJECT_DIR:?PROJECT_DIR fehlt in .env / missing in .env}/updater/updater.sh"]
     environment:
