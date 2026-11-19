@@ -31,7 +31,12 @@ APP_CONTAINER="${APP_CONTAINER:-$PROJECT-$SERVICE-1}"
 COMPOSE_IN_IMAGE="${COMPOSE_IN_IMAGE:-}"
 UPDATER_IN_IMAGE="${UPDATER_IN_IMAGE:-/app/install/updater.sh}"
 OVERRIDE_FILE="$PROJECT_DIR/docker-compose.override.yml"
-UPDATER_VERSION=3
+UPDATER_VERSION=4
+# Kleinste Version, die sich anfordern lässt (1.41.0). Der Updater von Images vor 1.5.1 schrieb im gemeinsamen Volume noch durch
+# Verknüpfungen (siehe unten); die Compose-Datei und dieses Skript kommen beim Update aus dem Ziel-Image. Wer die App übernähme, könnte
+# sonst per Anfrage-Datei eine alte Version verlangen und mit deren Updater wieder an Docker kommen. Zusätzlich nie auf eine ältere Version
+# als die laufende (Abstieg) und nie auf einen Updater mit kleinerer UPDATER_VERSION.
+MIN_VERSION="${UPDATER_MIN_VERSION:-1.5.1}"
 # Im gemeinsamen Volume ($CTL) kann auch die App schreiben. Wer die App übernähme, dürfte darüber nicht an
 # Docker kommen (und damit an den ganzen Server). Deshalb:
 # - Arbeitsdateien eines Updates (neue Compose-Datei, neues Skript, Kopie für den Rückweg) und das laufende
@@ -83,6 +88,19 @@ current_version() {
   sed -n 's/^APP_VERSION=//p' "$ENV_FILE" | tail -1
 }
 
+is_version() { # text - ist es N.N.N?
+  printf '%s' "$1" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
+}
+
+newer() { # a b - Erfolg, wenn Version a neuer ist als Version b (beide N.N.N)
+  awk -v a="$1" -v b="$2" 'BEGIN { split(a, x, "."); split(b, y, "."); for (i = 1; i <= 3; i++) { if (x[i] + 0 > y[i] + 0) exit 0; if (x[i] + 0 < y[i] + 0) exit 1 } exit 1 }'
+}
+
+running_version() { # Version des laufenden App-Containers aus dem Label seines Images (leer, wenn unbekannt)
+  # Nicht aus /api/health: Das beantwortet die App selbst - eine übernommene App könnte hier jede Version melden
+  docker inspect -f '{{index .Config.Labels "org.opencontainers.image.version"}}' "$APP_CONTAINER" 2>/dev/null | head -1
+}
+
 set_version() {
   if grep -q '^APP_VERSION=' "$ENV_FILE"; then
     sed -i "s/^APP_VERSION=.*/APP_VERSION=$1/" "$ENV_FILE"
@@ -119,12 +137,32 @@ fetch_files() {
 
 run_update() {
   FROM=$(current_version)
-  if ! printf '%s' "$TO" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+  if ! is_version "$TO"; then
     status failed "Ungültige Version: $TO"
     return
   fi
+  # Steht in der .env keine Versionsnummer (z. B. "latest", der Standard der .env.example), gilt für den Rückweg und den Vergleich die
+  # Version des laufenden Containers (Image-Label) - sonst bliebe ein gelungener Rückweg unerkannt ("latest" meldet die App nie). Ist sie
+  # nicht zu bestimmen (App-Container fehlt, Image ohne Label), gilt nur die Mindestversion.
+  if ! is_version "$FROM"; then
+    RUNNING=$(running_version)
+    if is_version "$RUNNING"; then
+      log "APP_VERSION=\"$FROM\" in der .env - es gilt die laufende Version $RUNNING"
+      FROM="$RUNNING"
+    fi
+  fi
   if [ "$TO" = "$FROM" ]; then
     status done "Version $TO ist bereits installiert."
+    return
+  fi
+  if ! newer "$TO" "$MIN_VERSION" && [ "$TO" != "$MIN_VERSION" ]; then
+    log "Version $TO abgelehnt: älter als $MIN_VERSION"
+    status failed "Version $TO ist zu alt (frühestens $MIN_VERSION)."
+    return
+  fi
+  if is_version "$FROM" && ! newer "$TO" "$FROM"; then
+    log "Version $TO abgelehnt: nicht neuer als die laufende Version $FROM"
+    status failed "Version $TO ist nicht neuer als $FROM - zurück auf eine ältere Version geht nur von Hand."
     return
   fi
 
@@ -160,10 +198,14 @@ run_update() {
     fi
     status done "Version $TO ist installiert."
     if [ -s "$WORK/updater.new" ] && ! cmp -s "$WORK/updater.new" "$SELF"; then
-      # Neues Updater-Skript: übernehmen und beenden - Docker startet den Container damit neu.
-      log "Updater-Skript aus Version $TO übernommen, Neustart"
-      cp "$WORK/updater.new" "$SELF"
-      exit 0
+      # Neues Updater-Skript: übernehmen und beenden - Docker startet den Container damit neu. Nie ein älteres (kleinere UPDATER_VERSION)
+      NEW_UPDATER_VERSION=$(sed -n 's/^UPDATER_VERSION=\([0-9][0-9]*\)$/\1/p' "$WORK/updater.new" | head -1)
+      if [ "${NEW_UPDATER_VERSION:-0}" -ge "$UPDATER_VERSION" ]; then
+        log "Updater-Skript aus Version $TO übernommen, Neustart"
+        cp "$WORK/updater.new" "$SELF"
+        exit 0
+      fi
+      log "Updater-Skript aus Version $TO nicht übernommen: UPDATER_VERSION ${NEW_UPDATER_VERSION:-?} ist kleiner als $UPDATER_VERSION"
     fi
     return
   fi

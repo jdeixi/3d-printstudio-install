@@ -25,9 +25,9 @@ unter **Issues** in diesem Repository.
 
 ## Installation mit Docker (Server, NAS)
 
-Voraussetzungen: Docker mit Docker Compose v2, ein 64-Bit-System (Intel/AMD oder ARM64), Internetzugang. ARM64 ist neu
-und bisher nur mit Docker auf einem Apple-Silicon-Mac geprüft, nicht auf einem Raspberry Pi oder einer ARM-NAS. Rückmeldungen
-dazu gern als Issue.
+Voraussetzungen: Docker mit Docker Compose v2, ein 64-Bit-System (Intel/AMD oder ARM64), Internetzugang. ARM64 ist mit Docker
+auf einem Apple-Silicon-Mac und auf einem Raspberry Pi 4B mit 8 GB geprüft (läuft dort flüssig; der Slicer-Dienst wurde auf dem Pi nicht
+gesondert bewertet), eine ARM-NAS noch nicht. Rückmeldungen dazu gern als Issue.
 
 ```bash
 mkdir 3d-printstudio && cd 3d-printstudio
@@ -193,9 +193,9 @@ Questions and bugs: in the app under Info → “Help & support” (opens a pre-
 
 ## Installation with Docker (server, NAS)
 
-Requirements: Docker with Docker Compose v2, a 64-bit system (Intel/AMD or ARM64), internet access. ARM64 is new and has
-only been checked with Docker on an Apple Silicon Mac so far, not on a Raspberry Pi or an ARM NAS. Feedback is welcome as an
-issue.
+Requirements: Docker with Docker Compose v2, a 64-bit system (Intel/AMD or ARM64), internet access. ARM64 has been checked
+with Docker on an Apple Silicon Mac and on a Raspberry Pi 4B with 8 GB (it runs smoothly there; the slicer service was not assessed
+separately on the Pi), not yet on an ARM NAS. Feedback is welcome as an issue.
 
 ```bash
 mkdir 3d-printstudio && cd 3d-printstudio

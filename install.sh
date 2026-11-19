@@ -60,9 +60,14 @@ else
     RUN_UID=""
     RUN_GID=""
   fi
-  sed -e "s|^DB_ENCRYPTION_KEY=.*|DB_ENCRYPTION_KEY=$KEY|" -e "s|^PROJECT_DIR=.*|PROJECT_DIR=$DIR|" \
-    -e "s|^SETUP_CODE=.*|SETUP_CODE=$CODE|" -e "s|^SLICER_TOKEN=.*|SLICER_TOKEN=$SLICER|" \
-    -e "s|^APP_UID=.*|APP_UID=$RUN_UID|" -e "s|^APP_GID=.*|APP_GID=$RUN_GID|" .env.example > .env
+  # umask 077: Die Datei entsteht gleich nur für dich lesbar (Schlüssel, Einrichtungscode), nicht erst nach einem späteren chmod
+  # umask 077: the file is created readable by you only (key, setup code), not only after a later chmod
+  (
+    umask 077
+    sed -e "s|^DB_ENCRYPTION_KEY=.*|DB_ENCRYPTION_KEY=$KEY|" -e "s|^PROJECT_DIR=.*|PROJECT_DIR=$DIR|" \
+      -e "s|^SETUP_CODE=.*|SETUP_CODE=$CODE|" -e "s|^SLICER_TOKEN=.*|SLICER_TOKEN=$SLICER|" \
+      -e "s|^APP_UID=.*|APP_UID=$RUN_UID|" -e "s|^APP_GID=.*|APP_GID=$RUN_GID|" .env.example > .env
+  )
   chmod 600 .env
   say "==> .env mit neuem Schlüssel angelegt – bitte zusätzlich sicher aufbewahren"
   say "    .env created with a new key – please also keep a safe copy"
