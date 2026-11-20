@@ -88,12 +88,20 @@ current_version() {
   sed -n 's/^APP_VERSION=//p' "$ENV_FILE" | tail -1
 }
 
-is_version() { # text - ist es N.N.N?
-  printf '%s' "$1" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
+is_version() { # text - ist es N.N.N oder N.N.N-rc.N (Vorabversion, seit 1.70.0)?
+  printf '%s' "$1" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$'
 }
 
-newer() { # a b - Erfolg, wenn Version a neuer ist als Version b (beide N.N.N)
-  awk -v a="$1" -v b="$2" 'BEGIN { split(a, x, "."); split(b, y, "."); for (i = 1; i <= 3; i++) { if (x[i] + 0 > y[i] + 0) exit 0; if (x[i] + 0 < y[i] + 0) exit 1 } exit 1 }'
+# a b - Erfolg, wenn Version a neuer ist als Version b (beide N.N.N oder N.N.N-rc.N). Wie SemVer: 2.0.0-rc.1 < 2.0.0-rc.2 < 2.0.0 - eine endgültige
+# Version ist neuer als ihre eigenen Vorabversionen.
+newer() {
+  awk -v a="$1" -v b="$2" '
+    function parse(v, out,   core, rc) {
+      rc = -1; core = v
+      if (match(v, /-rc\.[0-9]+$/)) { rc = substr(v, RSTART + 4) + 0; core = substr(v, 1, RSTART - 1) }
+      split(core, p, "."); out[1] = p[1] + 0; out[2] = p[2] + 0; out[3] = p[3] + 0; out[4] = (rc < 0) ? 1000000000 : rc
+    }
+    BEGIN { parse(a, x); parse(b, y); for (i = 1; i <= 4; i++) { if (x[i] > y[i]) exit 0; if (x[i] < y[i]) exit 1 } exit 1 }'
 }
 
 running_version() { # Version des laufenden App-Containers aus dem Label seines Images (leer, wenn unbekannt)
@@ -315,7 +323,8 @@ log "Updater bereit (Projekt $PROJECT, Image $IMAGE)"
 while true; do
   heartbeat
   if plain "$CTL/request"; then
-    TO=$(head -c 40 "$CTL/request" | tr -cd '0-9.')
+    # nur Ziffern, Punkte und - für eine Vorabversion (N.N.N-rc.N) - der Rest wird weggeworfen; is_version prüft danach die Form
+    TO=$(head -c 40 "$CTL/request" | tr -cd '0-9a-z.-' | head -n1)
     ID=$(date +%s)
     rm -f "$CTL/request"
     run_update
